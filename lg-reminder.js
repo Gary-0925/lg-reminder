@@ -6,11 +6,10 @@
 // @author       Gary0
 // @match        https://www.luogu.com.cn/*
 // @icon         https://cdn.luogu.com.cn/upload/image_hosting/vswisy2e.png
+// @supportURL   https://github.com/Gary-0925/lg-reminder/issues
 // @grant        none
 // @run-at       document-end
 // ==/UserScript==
-
-// Github项目： 
 
 const msg_hsty = "lg-reminder-history", uid_list = "lg-reminder-uid";
 var local_list, local_hsty = new Map;
