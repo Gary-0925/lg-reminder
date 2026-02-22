@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         lg-reminder
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  洛谷私信未读消息实时提示
 // @author       Gary0
 // @match        https://www.luogu.com.cn/*
@@ -66,6 +66,8 @@ function insert_el(base, label, content, id, classList)
 function insert_css(content) { insert_el(get_el(main_box_id), "style", content, "", ""); }
 function insert_js(content) { insert_el(get_el(main_box_id), "script", content, "", ""); }
 
+// 延迟函数
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function send_prompt_chat(uid) // 发送自定义私信
 {
@@ -98,9 +100,12 @@ function load_set_box() // 加载设置面板
 		set_box.style.display = "";
 
 		// 遍历特别关注用户列表
+		let cnt = 0;
 		for (var key of uid_list.get_map().keys())
 			if (uid_list.get_string(key) === 1)
 			{
+				cnt++;
+
 				// 特别关注用户条目
 				const uid_box = insert_el(set_box, "div", `<a href="https://www.luogu.com.cn/user/${key}">${key}</a>`, "", "lg_reminder_box");
 				uid_box.style = "position: relative; width: 90%; background-color: #45bee68a;";
@@ -122,7 +127,8 @@ function load_set_box() // 加载设置面板
 		// 添加特别关注用户
 		const add_btn = insert_el(set_box, "button", "添加特别关注用户", "", "lg_reminder_btn");
 		add_btn.style = "width: 90%; background-color: #14e84d42;";
-		add_btn.addEventListener("click", function(){ uid_list.set_string(prompt('请输入要特别关注的用户uid', 1202669), 1), load_set_box(), load_set_box(); });
+		if (cnt < 8) add_btn.addEventListener("click", function(){ uid_list.set_string(prompt('请输入要特别关注的用户uid', 1202669), 1), load_set_box(), load_set_box(); });
+		else add_btn.addEventListener("click", function(){ alert("特别关注的人太多啦，有封 ip 风险"), load_set_box(), load_set_box(); });
 
 		// 关闭按钮
 		const cls_btn = insert_el(set_box, "button", "×", "", "lg_reminder_btn");
@@ -136,13 +142,13 @@ function load_set_box() // 加载设置面板
 	}
 }
 
-function updata_msg() // 新消息监听
+async function updata_msg() // 新消息监听
 {
-	console.log("lg_reminder 新消息监听");
-
 	for (var key of uid_list.get_map().keys())
 		if (uid_list.get(key) === 1)
 		{
+			console.log("lg_reminder 新消息监听");
+
 			// 获取消息列表
 			fetch("https://www.luogu.com.cn/api/chat/record?user=" + key)
 			.then((response) => response.json())
@@ -179,11 +185,12 @@ function updata_msg() // 新消息监听
 				}
 			})
 			.catch((error) => console.error("错误: ", error));
+			await sleep(1000);
 		}
 	setTimeout(() =>
 	{
 		updata_msg();
-	}, 5000);
+	}, 10000);
 }
 
 (function()
