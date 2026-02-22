@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         lg-reminder
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1
 // @description  洛谷私信未读消息实时提示
 // @author       Gary0
 // @match        https://www.luogu.com.cn/*
