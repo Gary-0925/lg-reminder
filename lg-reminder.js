@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         lg-reminder
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  洛谷私信未读消息实时提示
 // @author       Gary0
 // @match        https://www.luogu.com.cn/*
 // @icon         https://cdn.luogu.com.cn/upload/image_hosting/vswisy2e.png
+// @updateURL    https://raw.githubusercontent.com/Gary-0925/lg-reminder/refs/heads/main/lg-reminder.js
 // @supportURL   https://github.com/Gary-0925/lg-reminder/issues
 // @grant        none
 // @run-at       document-end
