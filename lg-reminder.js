@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         lg-reminder
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  洛谷私信未读消息实时提示
 // @author       Gary0
 // @match        https://www.luogu.com.cn/*
@@ -58,10 +58,10 @@ function esc_html(str) // 防 xxs
 // 元素快捷操作
 function get_el(id) { return document.getElementById(id); }
 function new_el(id) { return document.createElement(id); }
-function insert_el(base, label, content, id, classList)
+function insert_el(base, label, content, id, class_list)
 {
 	const el = new_el(label);
-	el.innerHTML = content, el.id = id, el.classList = classList;
+	el.innerHTML = content, el.id = id, el.classList = class_list;
 	return base.appendChild(el);
 }
 function insert_css(content) { insert_el(get_el(main_box_id), "style", content, "", ""); }
@@ -113,7 +113,7 @@ function load_set_box() // 加载设置面板
 
 				if (is_debug)
 				{
-					// 删除最新消息记录（debug用）
+					// 删除最新消息记录(debug)
 					const clr_btn = insert_el(uid_box, "button", "删除最新消息记录(debug)", "", "lg_reminder_btn");
 					clr_btn.style = "position: absolute; right: 150px; top: 0; height: 100%; background-color: #14a1e8c5; margin: 0;";
 					clr_btn.addEventListener("click", function(uid){ tmp_hsty.set(uid, 0), msg_hsty.set_string(uid, 0), load_set_box(), load_set_box(); }.bind(null, key));
@@ -128,7 +128,7 @@ function load_set_box() // 加载设置面板
 		// 添加特别关注用户
 		const add_btn = insert_el(set_box, "button", "添加特别关注用户", "", "lg_reminder_btn");
 		add_btn.style = "width: 90%; background-color: #14e84d42;";
-		if (cnt < 8) add_btn.addEventListener("click", function(){ uid_list.set_string(prompt('请输入要特别关注的用户uid', 1202669), 1), load_set_box(), load_set_box(); });
+		if (cnt < 8) add_btn.addEventListener("click", function(){ let uid = prompt('请输入要特别关注的用户uid', 1202669); if (uid) uid_list.set_string(uid, 1), load_set_box(), load_set_box(); });
 		else add_btn.addEventListener("click", function(){ alert("特别关注的人太多啦，有封 ip 风险"), load_set_box(), load_set_box(); });
 
 		// 关闭按钮
@@ -188,10 +188,8 @@ async function updata_msg() // 新消息监听
 			.catch((error) => console.error("错误: ", error));
 			await sleep(1000);
 		}
-	setTimeout(() =>
-	{
-		updata_msg();
-	}, 10000);
+	await sleep(5000);
+	updata_msg();
 }
 
 (function()
