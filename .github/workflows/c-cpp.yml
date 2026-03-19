@@ -18,7 +18,10 @@ jobs:
     
     - name: Build
       run: cmake --build build --config Release --verbose
-    
-    - name: Find exe
-      run: |
-        Get-ChildItem -Recurse -Filter *.exe | Select-Object FullName
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lg-reminder-${{ github.sha }}
+        path: build/Release/lg-reminder.exe
+        if-no-files-found: error
