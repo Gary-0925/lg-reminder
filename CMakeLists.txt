@@ -15,8 +15,8 @@ add_executable(lg-reminder WIN32)
 
 # 添加源文件
 target_sources(lg-reminder PRIVATE
-    res/lg-reminder.cpp
-    res/lg-reminder.rc
+    packer/res/lg-reminder.cpp
+    packer/res/lg-reminder.rc
 )
 
 # 设置属性
