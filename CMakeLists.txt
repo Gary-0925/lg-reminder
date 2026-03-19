@@ -5,7 +5,7 @@ project(lg-reminder VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 移除 WIN32 标志，改为控制台程序
+# 控制台程序
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # 设置输出目录变量
@@ -32,11 +32,6 @@ if(WIN32)
     )
 endif()
 
-# 安装规则（可选）
+# 安装规则
 install(TARGETS lg-reminder RUNTIME DESTINATION bin)
 install(FILES res/icon.ico DESTINATION share/icons)
-
-# 打印构建信息
-message(STATUS "Project: ${PROJECT_NAME}")
-message(STATUS "Source dir: ${CMAKE_SOURCE_DIR}")
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
