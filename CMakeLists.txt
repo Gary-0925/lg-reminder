@@ -13,9 +13,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lg-reminder)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/o)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/o)
 
-# 定义可执行文件
-add_executable(lg-reminder WIN32)
-
 # 添加源文件
 target_sources(lg-reminder PRIVATE
     packer/res/lg-reminder.cpp
