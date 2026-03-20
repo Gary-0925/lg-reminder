@@ -20,7 +20,7 @@
 运行一次 `lg-reminder.exe`，之后关掉程序，现在你放程序的目录下应该自动生成了一个 `config.txt`，内容应该是：
 
 ```txt
-# lg-reminder config
+# lg-reminder 配置
 
 cookie=你的完整cookie
 
