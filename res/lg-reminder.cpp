@@ -69,9 +69,9 @@ struct Msg {
 
 string utf8_to_system(const string &utf8_str);
 void WriteLog(const string& msg);
-void ShowBeautifiedNotification(const string& title, const string& content, bool is_error = false);
-void UpdateTrayIcon(bool has_new_msg = false);
-HICON GetTrayIcon(bool has_new_msg = false);
+void ShowBeautifiedNotification(const string& title, const string& content, bool is_error);
+void UpdateTrayIcon(bool has_new_msg);
+HICON GetTrayIcon(bool has_new_msg);
 void noti(vector<Msg> v, string us);
 
 // 创建自定义图标（使用 GDI+ 或简单图形）
