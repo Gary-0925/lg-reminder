@@ -38,6 +38,5 @@ jobs:
       with:
         files: |
           build/Release/lg-reminder.exe
-          build/Release/lg-reminder.pdb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
