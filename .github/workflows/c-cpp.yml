@@ -41,6 +41,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          'build/Release/lg-reminder - Windows下载.zip'
+          build/Release/lg-reminder - Windows下载.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
