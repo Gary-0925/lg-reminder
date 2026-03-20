@@ -1,9 +1,7 @@
 #include <windows.h>
 
-// Õº±Í◊ ‘¥
 1 ICON "icon.ico"
 
-// ∞Ê±æ–≈œ¢
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     0,4,0,0
 PRODUCTVERSION  0,4,0,0
@@ -18,7 +16,7 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "CompanyName", "Gary0"
-            VALUE "FileDescription", "Windows Õ®÷™÷–µØ¥∞œ‘ æ¬Âπ»ÀΩ–≈"
+            VALUE "FileDescription", "Windows ÈÄöÁü•‰∏≠ÂºπÁ™óÊòæÁ§∫Ê¥õË∞∑ÁßÅ‰ø°"
             VALUE "FileVersion", "v.0.4"
             VALUE "InternalName", "lg-reminder"
             VALUE "LegalCopyright", "Copyright (c) 2026 Gary0"
