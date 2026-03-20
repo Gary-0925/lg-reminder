@@ -2,13 +2,13 @@
 lg-reminder
 在 Windows 通知弹窗提醒洛谷私信
 ==================================================
-@version v.1.0.2
+@version v.1.0.3
 @author Gary0
 @license MIT
 ==================================================
 */
 
-#define lg_reminder_version "v.1.0.2"
+#define lg_reminder_version "v.1.0.3"
 #define lg_reminder_author "Gary0"
 
 #include <iostream>
@@ -512,7 +512,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     ShowAboutDialog(hwnd);
                     break;
                 case ID_TRAY_SETTINGS:
-                    ShowSettingsDialog(hwnd);
+                    ShowCfgDialog(hwnd);
                     break;
                 case ID_TRAY_SHOW_LOG:
                     ShowLogDialog(hwnd);
@@ -538,7 +538,7 @@ void CreateTrayIcon(HWND hwnd) {
     g_app_icon = GetAppIcon();
     g_nid.hIcon = g_app_icon;
     
-    strncpy_s(g_nid.szTip, "lg-reminder - 洛谷私信提醒", sizeof(g_nid.szTip) - 1);
+    strncpy_s(g_nid.szTip, utf8_to_system(string("lg-reminder - 洛谷私信提醒")).c_str(), sizeof(g_nid.szTip) - 1);
     Shell_NotifyIconA(NIM_ADD, &g_nid);
 }
 
@@ -582,39 +582,38 @@ void ShowAboutDialog(HWND hwnd) {
     string title_sys = utf8_to_system(title);
     
     MessageBoxA(hwnd, msg_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONINFORMATION);
-}
 
-void ShowSettingsDialog(HWND hwnd) {
-    string current_interval = to_string(g_check_interval);
-    string hint = "请手动编辑 config.txt 文件";
-    string hint_title = "提示";
-    
-    string hint_sys = utf8_to_system(hint);
-    string hint_title_sys = utf8_to_system(hint_title);
-    
-    MessageBoxA(hwnd, hint_sys.c_str(), hint_title_sys.c_str(), MB_OK);
-}
 
 void ShowLogDialog(HWND hwnd) {
-    ifstream log("lg-reminder.log");
-    string content;
-    if (log.is_open()) {
-        string line;
-        while (getline(log, line)) {
-            content += line + "\n";
-        }
+    // 获取当前程序目录下的日志文件完整路径
+    char logPath[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, logPath);
+    strcat_s(logPath, "\\lg-reminder.log");
+    
+    // 检查日志文件是否存在
+    if (GetFileAttributesA(logPath) == INVALID_FILE_ATTRIBUTES) {
+        // 文件不存在，创建空文件
+        ofstream log(logPath);
         log.close();
     }
     
-    if (content.empty()) {
-        content = "暂无日志";
+    ShellExecuteA(hwnd, "open", logPath, NULL, NULL, SW_SHOW);
+}
+
+void ShowCfgDialog(HWND hwnd) {
+    // 获取当前程序目录下的日志文件完整路径
+    char logPath[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, logPath);
+    strcat_s(logPath, "\\config.txt");
+    
+    // 检查日志文件是否存在
+    if (GetFileAttributesA(logPath) == INVALID_FILE_ATTRIBUTES) {
+        // 文件不存在，创建空文件
+        ofstream log(logPath);
+        log.close();
     }
     
-    string title = "运行日志";
-    string content_sys = utf8_to_system(content);
-    string title_sys = utf8_to_system(title);
-    
-    MessageBoxA(hwnd, content_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONINFORMATION);
+    ShellExecuteA(hwnd, "open", logPath, NULL, NULL, SW_SHOW);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
