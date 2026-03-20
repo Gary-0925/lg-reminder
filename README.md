@@ -1,4 +1,6 @@
-[![最新版本](https://img.shields.io/github/v/release/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/tags) ![license](https://img.shields.io/github/license/Gary-0925/lg-reminder.svg)
+[![最新版本](https://img.shields.io/github/v/release/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/tags)
+[![最新 commit](https://img.shields.io/github/last-commit/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/commit/main)
+[![license](https://img.shields.io/github/license/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/blob/main/LICENSE)
 
 省流：在Windows弹窗显示洛谷私信的工具可以到[这里](https://github.com/Gary-0925/lg-reminder/tags)下载运行后按说明填写配置再运行就能用了。
 
