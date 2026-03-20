@@ -6,7 +6,7 @@
 
 不知道《洛谷网红》有没有这样的困扰：洛谷私信太多，读不过来，容易漏消息，难以及时看到消息。~~其实我猜大概没有。~~
 
-在 @[PenaltyKing](/user/976095) 的建议下，我写了一个在 Windows 通知中弹窗显示洛谷私信的工具。
+在 @[PenaltyKing](https://www.luogu.com.cn/user/976095) 的建议下，我写了一个在 Windows 通知中弹窗显示洛谷私信的工具。
 
 可以前往这里下载： https://github.com/Gary-0925/lg-reminder-win/tags 。  
 项目地址： https://github.com/Gary-0925/lg-reminder-win 。
