@@ -1,4 +1,4 @@
-省流：在Windows弹窗显示洛谷私信的工具可以到[这里](https://github.com/Gary-0925/lg-reminder-win/tags)下载运行后按说明填写配置再运行就能用了。
+省流：在Windows弹窗显示洛谷私信的工具可以到[这里](https://github.com/Gary-0925/lg-reminder/tags)下载运行后按说明填写配置再运行就能用了。
 
 [洛谷地址](https://www.luogu.com.cn/article/ftltn0ld)。
 
@@ -10,8 +10,8 @@
 
 在 @[PenaltyKing](https://www.luogu.com.cn/user/976095) 的建议下，我写了一个在 Windows 通知中弹窗显示洛谷私信的工具。
 
-可以前往这里下载： https://github.com/Gary-0925/lg-reminder-win/tags 。  
-项目地址： https://github.com/Gary-0925/lg-reminder-win 。
+可以前往这里下载： https://github.com/Gary-0925/lg-reminder/tags 。  
+项目地址： https://github.com/Gary-0925/lg-reminder 。
 
 如果你只想使用脚本，请点击上面的链接，进入最新版本，并点击 `lg-reminder.windows.zip`，**下载后一定要先解压再运行**。
 
