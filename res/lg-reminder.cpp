@@ -406,7 +406,7 @@ bool cfg(string &c, string &u, int &t) {
         else if (k == "interval")
             t = stoi(v);
     }
-    return !c.empty() && c.find("你的") == string::npos;
+    return !c.empty() && c.find(utf8_to_system("你的")) == string::npos;
 }
 
 void SaveHistory(const vector<int>& v) {
@@ -453,9 +453,9 @@ vector<Msg> findnew(vector<Msg> cur, vector<int> lst) {
 }
 
 void CheckMessages() {
-    WriteLog("监听消息...");
-    if (g_checking) return;
+    if (g_checking || !g_running) return;
     g_checking = true;
+    WriteLog("监听消息...");
     
     string htm;
     if (http(g_cookie, htm)) {
@@ -489,6 +489,7 @@ void CheckMessages() {
             string error_sys = utf8_to_system(error_msg);
             string title_sys = utf8_to_system("错误");    
             MessageBoxA(NULL, error_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONERROR);
+            g_running = false;
         }
     }
     g_checking = false;
