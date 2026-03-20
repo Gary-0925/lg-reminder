@@ -13,7 +13,7 @@
 可以前往这里下载： https://github.com/Gary-0925/lg-reminder-win/tags 。  
 项目地址： https://github.com/Gary-0925/lg-reminder-win 。
 
-如果你只想使用脚本，请点击上面的链接，进入最新版本，并点击 `lg-reminder.exe`。
+如果你只想使用脚本，请点击上面的链接，进入最新版本，并点击 `lg-reminder.windows.zip`，**下载后一定要先解压再运行**。
 
 ## 使用方法
 
