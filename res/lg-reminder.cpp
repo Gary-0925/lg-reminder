@@ -1,14 +1,14 @@
 /*
 lg-reminder
-在 Windows 通知弹窗提醒洛谷私信
+在 Windows 通知弹窗提醒洛谷私信（无窗口版本）
 ==================================================
-@version win.0.6
+@version win.0.7
 @author Gary0
 @license MIT
 ==================================================
 */
 
-#define lg_reminder_version "win.0.6"
+#define lg_reminder_version "win.0.7"
 #define lg_reminder_author "Gary0"
 
 #include <iostream>
@@ -28,6 +28,7 @@ lg-reminder
 #include <iomanip>
 #include <atomic>
 #include <mutex>
+#include <sstream>
 
 #pragma comment(lib, "winhttp.lib")
 #pragma comment(lib, "user32.lib")
@@ -44,25 +45,37 @@ atomic<bool> g_running(true);
 atomic<bool> g_checking(false);
 int g_check_interval = 30;
 HWND g_hwnd = NULL;
-HWND g_console_hwnd = NULL;  // 保存控制台窗口句柄
 NOTIFYICONDATAA g_nid = {};
 string g_cookie, g_username;
 vector<int> g_history_ids;
 mutex g_history_mutex;
-bool g_console_visible = true;
 
 // 菜单项ID
 #define ID_TRAY_EXIT 1001
-#define ID_TRAY_SHOW 1002
-#define ID_TRAY_HIDE 1003
-#define ID_TRAY_ABOUT 1004
-#define ID_TRAY_SETTINGS 1005
+#define ID_TRAY_CHECK 1002
+#define ID_TRAY_ABOUT 1003
+#define ID_TRAY_SETTINGS 1004
+#define ID_TRAY_SHOW_LOG 1005
 
 struct Msg { 
     int id, uid; 
     string name, time, con; 
     bool is_new; 
 };
+
+// 日志输出（写入文件）
+void WriteLog(const string& msg) {
+    ofstream log("lg-reminder.log", ios::app);
+    if (log.is_open()) {
+        SYSTEMTIME st;
+        GetLocalTime(&st);
+        char timebuf[64];
+        sprintf_s(timebuf, "[%04d-%02d-%02d %02d:%02d:%02d] ",
+                  st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+        log << timebuf << msg << endl;
+        log.close();
+    }
+}
 
 // 前置声明
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -71,11 +84,10 @@ void RemoveTrayIcon();
 void ShowContextMenu(HWND hwnd);
 void ShowAboutDialog(HWND hwnd);
 void ShowSettingsDialog(HWND hwnd);
+void ShowLogDialog(HWND hwnd);
 void CheckMessages();
 void SaveHistory(const vector<int>& ids);
 vector<int> LoadHistory();
-void HideConsole();
-void ShowConsole();
 
 string now() {
     SYSTEMTIME st; 
@@ -85,18 +97,6 @@ string now() {
               st.wYear, st.wMonth, st.wDay, 
               st.wHour, st.wMinute, st.wSecond);
     return b;
-}
-
-void SetConsoleUTF8() {
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD dwMode = 0;
-    GetConsoleMode(hOut, &dwMode);
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(hOut, dwMode);
-#endif
 }
 
 string utf8_to_system(const string &utf8_str) {
@@ -439,13 +439,13 @@ void CheckMessages() {
                 lock_guard<mutex> lock(g_history_mutex);
                 vector<Msg> nw = findnew(v, g_history_ids);
                 if (!nw.empty()) {
-                    if (g_console_visible) {
-                        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-                        SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-                        cout << "[" << now() << "] 发现新消息:";
-                        for (auto &m : nw) cout << " " << m.name;
-                        cout << endl;
+                    // 记录到日志
+                    string logmsg = "发现新消息: ";
+                    for (auto &m : nw) {
+                        logmsg += m.name + " ";
                     }
+                    WriteLog(logmsg);
+                    
                     noti(nw, g_username);
                     g_history_ids = ids;
                     SaveHistory(ids);
@@ -457,10 +457,12 @@ void CheckMessages() {
 }
 
 void CheckMessagesLoop() {
+    WriteLog("程序启动，开始监听消息");
     while (g_running) {
         CheckMessages();
         this_thread::sleep_for(chrono::seconds(g_check_interval));
     }
+    WriteLog("程序退出");
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -482,17 +484,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             
         case WM_COMMAND:
             switch (LOWORD(wParam)) {
-                case ID_TRAY_SHOW:
-                    ShowConsole();
-                    break;
-                case ID_TRAY_HIDE:
-                    HideConsole();
+                case ID_TRAY_CHECK:
+                    // 手动检查
+                    thread(CheckMessages).detach();
                     break;
                 case ID_TRAY_ABOUT:
                     ShowAboutDialog(hwnd);
                     break;
                 case ID_TRAY_SETTINGS:
                     ShowSettingsDialog(hwnd);
+                    break;
+                case ID_TRAY_SHOW_LOG:
+                    ShowLogDialog(hwnd);
                     break;
                 case ID_TRAY_EXIT:
                     g_running = false;
@@ -522,14 +525,19 @@ void RemoveTrayIcon() {
 void ShowContextMenu(HWND hwnd) {
     HMENU hMenu = CreatePopupMenu();
     
-    // 修复：使用 .c_str() 转换为 const char*
-    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SHOW, utf8_to_system("显示控制台").c_str());
-    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_HIDE, utf8_to_system("隐藏控制台").c_str());
+    string str_check = utf8_to_system("手动检查");
+    string str_show_log = utf8_to_system("查看日志");
+    string str_settings = utf8_to_system("设置");
+    string str_about = utf8_to_system("关于");
+    string str_exit = utf8_to_system("退出");
+    
+    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_CHECK, str_check.c_str());
     InsertMenuA(hMenu, -1, MF_SEPARATOR, 0, NULL);
-    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SETTINGS, utf8_to_system("设置").c_str());
-    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_ABOUT, utf8_to_system("关于").c_str());
+    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SHOW_LOG, str_show_log.c_str());
+    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SETTINGS, str_settings.c_str());
+    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_ABOUT, str_about.c_str());
     InsertMenuA(hMenu, -1, MF_SEPARATOR, 0, NULL);
-    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_EXIT, utf8_to_system("退出").c_str());
+    InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_EXIT, str_exit.c_str());
     
     POINT pt;
     GetCursorPos(&pt);
@@ -542,12 +550,13 @@ void ShowContextMenu(HWND hwnd) {
 void ShowAboutDialog(HWND hwnd) {
     string msg = "lg-reminder " + string(lg_reminder_version) + 
                  "\n作者: " + string(lg_reminder_author) +
-                 "\n\n洛谷私信提醒工具\n运行于系统托盘\n\n感谢使用！";
+                 "\n\n洛谷私信提醒工具\n后台运行，无窗口\n\n感谢使用！";
     string title = "关于 lg-reminder";
     
-    // 修复：转换为系统编码并获取 C 字符串
-    MessageBoxA(hwnd, utf8_to_system(msg).c_str(), 
-                utf8_to_system(title).c_str(), MB_OK | MB_ICONINFORMATION);
+    string msg_sys = utf8_to_system(msg);
+    string title_sys = utf8_to_system(title);
+    
+    MessageBoxA(hwnd, msg_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONINFORMATION);
 }
 
 void ShowSettingsDialog(HWND hwnd) {
@@ -557,128 +566,90 @@ void ShowSettingsDialog(HWND hwnd) {
     string hint = "请手动编辑 config.txt 文件修改间隔";
     string hint_title = "提示";
     
-    if (MessageBoxA(hwnd, utf8_to_system(question).c_str(), 
-                    utf8_to_system(title).c_str(), MB_YESNO | MB_ICONQUESTION) == IDYES) {
-        MessageBoxA(hwnd, utf8_to_system(hint).c_str(), 
-                    utf8_to_system(hint_title).c_str(), MB_OK);
-    }
-}
-
-void HideConsole() {
-    if (g_console_visible && g_console_hwnd) {
-        // 方法1: 使用 ShowWindow 隐藏
-        ShowWindow(g_console_hwnd, SW_HIDE);
-        
-        // 方法2: 同时隐藏任务栏按钮
-        SetWindowLong(g_console_hwnd, GWL_EXSTYLE, 
-                      GetWindowLong(g_console_hwnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
-        
-        g_console_visible = false;
-        
-        if (g_nid.hWnd) {
-            strncpy_s(g_nid.szTip, "lg-reminder - 后台运行中", sizeof(g_nid.szTip) - 1);
-            Shell_NotifyIconA(NIM_MODIFY, &g_nid);
-        }
-        
-        // 可选：输出到调试信息
-        OutputDebugStringA("Console hidden\n");
-    }
-}
-
-void ShowConsole() {
-    if (!g_console_visible && g_console_hwnd) {
-        // 恢复普通窗口样式
-        SetWindowLong(g_console_hwnd, GWL_EXSTYLE, 
-                      GetWindowLong(g_console_hwnd, GWL_EXSTYLE) & ~WS_EX_TOOLWINDOW);
-        
-        // 显示控制台窗口
-        ShowWindow(g_console_hwnd, SW_SHOW);
-        
-        // 确保窗口在前台并刷新
-        SetForegroundWindow(g_console_hwnd);
-        BringWindowToTop(g_console_hwnd);
-        
-        g_console_visible = true;
-        
-        if (g_nid.hWnd) {
-            strncpy_s(g_nid.szTip, "lg-reminder - 洛谷私信提醒", sizeof(g_nid.szTip) - 1);
-            Shell_NotifyIconA(NIM_MODIFY, &g_nid);
-        }
-        
-        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-        SetConsoleTextAttribute(h, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-        cout << "\n==================================================\n";
-        cout << "控制台已显示，程序继续运行中...\n";
-        cout << "轮询间隔: " << g_check_interval << " 秒\n";
-        cout << "历史消息: " << g_history_ids.size() << " 条\n";
-        cout << "==================================================\n" << endl;
-        SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-        
-        // 刷新控制台输出
-        fflush(stdout);
-    }
-}
-
-int main() {
-    SetConsoleUTF8();
-    SetConsoleTitleA("lg-reminder");
+    string question_sys = utf8_to_system(question);
+    string title_sys = utf8_to_system(title);
+    string hint_sys = utf8_to_system(hint);
+    string hint_title_sys = utf8_to_system(hint_title);
     
-    // 获取控制台窗口句柄
-    g_console_hwnd = GetConsoleWindow();
+    if (MessageBoxA(hwnd, question_sys.c_str(), title_sys.c_str(), 
+                    MB_YESNO | MB_ICONQUESTION) == IDYES) {
+        MessageBoxA(hwnd, hint_sys.c_str(), hint_title_sys.c_str(), MB_OK);
+    }
+}
+
+void ShowLogDialog(HWND hwnd) {
+    ifstream log("lg-reminder.log");
+    string content;
+    if (log.is_open()) {
+        string line;
+        while (getline(log, line)) {
+            content += line + "\n";
+        }
+        log.close();
+    }
     
+    if (content.empty()) {
+        content = "暂无日志";
+    }
+    
+    string title = "运行日志";
+    string content_sys = utf8_to_system(content);
+    string title_sys = utf8_to_system(title);
+    
+    MessageBoxA(hwnd, content_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONINFORMATION);
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     // 读取配置
     if (!cfg(g_cookie, g_username, g_check_interval)) {
-        cout << "错误：配置加载失败\n\n";
-        cout << "请编辑 config.txt 文件，填入您的 cookie\n\n";
-        cout << "如何获取 cookie：\n";
-        cout << "1. 在浏览器中登录洛谷并进入私信页面\n";
-        cout << "2. 按 F12 打开开发者工具\n";
-        cout << "3. 切换到\"网络\"标签，刷新页面\n";
-        cout << "4. 点进名称是\"chat\"的请求，往下翻，在 Request Headers 中找到\"Cookie\"\n";
-        cout << "5. 复制完整 cookie 内容到 config.txt\n";
-        cout << "\n按任意键退出..." << endl;
-        system("pause > nul");
+        // 配置错误时显示消息框
+        string error_msg = "错误：配置加载失败\n\n请编辑 config.txt 文件，填入您的 cookie\n\n"
+                          "如何获取 cookie：\n"
+                          "1. 在浏览器中登录洛谷并进入私信页面\n"
+                          "2. 按 F12 打开开发者工具\n"
+                          "3. 切换到\"网络\"标签，刷新页面\n"
+                          "4. 点进名称是\"chat\"的请求，往下翻，在 Request Headers 中找到\"Cookie\"\n"
+                          "5. 复制完整 cookie 内容到 config.txt";
+        
+        string error_sys = utf8_to_system(error_msg);
+        string title_sys = utf8_to_system("配置错误");
+        
+        MessageBoxA(NULL, error_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONERROR);
         return 1;
     }
     
     // 加载历史记录
     g_history_ids = LoadHistory();
     
-    // 显示启动信息
-    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO ci;
-    GetConsoleCursorInfo(h, &ci);
-    ci.bVisible = 0;
-    SetConsoleCursorInfo(h, &ci);
-    
-    SetConsoleTextAttribute(h, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    cout << "lg-reminder (" << lg_reminder_version << " by " << lg_reminder_author << ")\n";
-    cout << "==================================================\n\n";
-    SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    cout << "启动信息:\n  轮询间隔: " << g_check_interval << " 秒\n";
-    cout << "  历史消息: " << g_history_ids.size() << " 条\n\n";
-    cout << "程序已启动，可在系统托盘找到图标\n";
-    cout << "右键托盘图标可显示/隐藏控制台或退出程序\n";
-    cout << "==================================================\n\n";
-    
-    // 创建隐藏窗口用于接收托盘消息
+    // 创建隐藏窗口
     WNDCLASSA wc = {};
     wc.lpfnWndProc = WindowProc;
-    wc.hInstance = GetModuleHandle(NULL);
+    wc.hInstance = hInstance;
     wc.lpszClassName = "LGReminderClass";
     RegisterClassA(&wc);
     
     g_hwnd = CreateWindowA("LGReminderClass", "lg-reminder", WS_OVERLAPPEDWINDOW,
-                           0, 0, 0, 0, NULL, NULL, wc.hInstance, NULL);
+                           0, 0, 0, 0, NULL, NULL, hInstance, NULL);
     
     if (!g_hwnd) {
-        cout << "错误：无法创建窗口" << endl;
+        MessageBoxA(NULL, "无法创建窗口", "错误", MB_OK);
         return 1;
     }
     
     // 启动消息检查线程
     thread check_thread(CheckMessagesLoop);
     check_thread.detach();
+    
+    // 显示启动提示
+    string start_msg = "lg-reminder " + string(lg_reminder_version) + " 已启动\n\n"
+                       "轮询间隔: " + to_string(g_check_interval) + " 秒\n"
+                       "历史消息: " + to_string(g_history_ids.size()) + " 条\n\n"
+                       "程序已在后台运行，可在系统托盘找到图标";
+    
+    string start_sys = utf8_to_system(start_msg);
+    string title_sys = utf8_to_system("启动成功");
+    
+    MessageBoxA(NULL, start_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONINFORMATION);
     
     // 消息循环
     MSG msg;
@@ -689,7 +660,5 @@ int main() {
     
     // 清理
     RemoveTrayIcon();
-    cout << "程序已退出" << endl;
-    
     return 0;
 }
