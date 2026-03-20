@@ -12,6 +12,7 @@ lg-reminder
 使用了 AI 辅助开发，计划增加犇犇提醒和通知提醒等功能
 ==================================================
 */
+
 #define lg_reminder_version "0.4"
 #define lg_reminder_author "Gary0"
 
