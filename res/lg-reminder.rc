@@ -1,7 +1,9 @@
 #include <windows.h>
 
+// 图标资源
 1 ICON "icon.ico"
 
+// 版本信息
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     0,4,0,0
 PRODUCTVERSION  0,4,0,0
@@ -16,7 +18,7 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "CompanyName", "Gary0"
-            VALUE "FileDescription", "Windows 通知中弹窗显示洛谷私信"
+            VALUE "FileDescription", "Show luogu chat new messages in Windows."
             VALUE "FileVersion", "v.0.4"
             VALUE "InternalName", "lg-reminder"
             VALUE "LegalCopyright", "Copyright (c) 2026 Gary0"
