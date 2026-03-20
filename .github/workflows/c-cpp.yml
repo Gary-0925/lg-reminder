@@ -34,13 +34,13 @@ jobs:
 
     - name: Create zip
       if: startsWith(github.ref, 'refs/tags/')
-      run: powershell -Command "Compress-Archive -Path 'build/Release/*' -DestinationPath 'build/Release/lg-reminder - Windows下载.zip' -Force"
+      run: powershell -Command "Compress-Archive -Path 'build/Release/*' -DestinationPath 'build/Release/lg-reminder.windows.zip' -Force"
 
     - name: Upload to Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          build/Release/lg-reminder - Windows下载.zip
+          build/Release/lg-reminder.windows.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
