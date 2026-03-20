@@ -39,6 +39,7 @@ interval=15
 > > 3. 切换到“网络”标签，刷新页面
 > > 4. 点进名称是“chat”的请求，往下翻，在 Request Headers 中找到“Cookie”
 > > 5. 复制 cookie 内容到 config.txt
+> > 
 > > 注意是完整 cookie，格式大概形如：
 > > ```
 > > code=1; uid=1202669; notice=14695742; version=1.14.1; engine=bing; __client_id=*********************; _uid=1202669;
