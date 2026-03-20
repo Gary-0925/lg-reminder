@@ -105,7 +105,7 @@ void CreateTrayIcon(HWND hwnd);
 void RemoveTrayIcon();
 void ShowContextMenu(HWND hwnd);
 void ShowAboutDialog(HWND hwnd);
-void ShowSettingsDialog(HWND hwnd);
+void ShowCfgDialog(HWND hwnd);
 void ShowLogDialog(HWND hwnd);
 void CheckMessages();
 void SaveHistory(const vector<int>& ids);
