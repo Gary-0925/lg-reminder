@@ -1,4 +1,4 @@
-name: Build
+name: Build and Release
 
 on:
   push:
@@ -6,14 +6,21 @@ on:
     tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
-  build-windows:
+  build:
     runs-on: windows-latest
     
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Show git ref
+      run: echo "Current ref: ${{ github.ref }}"
     
     - name: Configure CMake
       run: cmake -B build -A Win32
@@ -21,18 +28,18 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
     
-    - name: Upload build artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: lg-reminder - Windows下载
+        name: lg-reminder-${{ github.sha }}
         path: build/Release/lg-reminder.exe
-        if-no-files-found: error
-
-    - name: Upload to Release
-      uses: softprops/action-gh-release@v1
+    
+    - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
       with:
-        files: |
-          build/Release/lg-reminder.exe
+        name: Release ${{ github.ref_name }}
+        files: build/Release/lg-reminder.exe
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
