@@ -29,6 +29,7 @@ lg-reminder
 #include <atomic>
 #include <mutex>
 #include <sstream>
+#include <shellapi.h>
 
 #pragma comment(lib, "winhttp.lib")
 #pragma comment(lib, "user32.lib")
@@ -582,7 +583,7 @@ void ShowAboutDialog(HWND hwnd) {
     string title_sys = utf8_to_system(title);
     
     MessageBoxA(hwnd, msg_sys.c_str(), title_sys.c_str(), MB_OK | MB_ICONINFORMATION);
-
+}
 
 void ShowLogDialog(HWND hwnd) {
     // 获取当前程序目录下的日志文件完整路径
