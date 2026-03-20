@@ -1,14 +1,14 @@
 /*
-lg-reminder 应用版
+lg-reminder
 在 Windows 通知弹窗提醒洛谷私信
 ==================================================
-@version win.0.1
+@version v.1.0
 @author Gary0
 @license MIT
 ==================================================
 */
 
-#define lg_reminder_version "win.0.1"
+#define lg_reminder_version "v.1.0"
 #define lg_reminder_author "Gary0"
 
 #include <iostream>
