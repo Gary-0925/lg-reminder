@@ -331,7 +331,7 @@ bool cfg(string &c, string &u, int &t) {
                 "# lg-reminder 配置\n\n"
                 "cookie=你的完整cookie\n\n"
                 "# 用户名\nusername=你的洛谷用户名\n\n"
-                "# 轮询间隔\ninterval=15";
+                "# 轮询间隔\ninterval=10";
             o << utf8_to_system(config);
             o.close();
         }
@@ -525,7 +525,6 @@ void ShowContextMenu(HWND hwnd) {
     string str_about = utf8_to_system("关于");
     string str_exit = utf8_to_system("退出");
     
-    InsertMenuA(hMenu, -1, MF_SEPARATOR, 0, NULL);
     InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SHOW_LOG, str_show_log.c_str());
     InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SETTINGS, str_settings.c_str());
     InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_ABOUT, str_about.c_str());
@@ -541,8 +540,9 @@ void ShowContextMenu(HWND hwnd) {
 }
 
 void ShowAboutDialog(HWND hwnd) {
-    string msg = "lg-reminder 应用版 " + string(lg_reminder_version) + 
-                 "\n作者: " + string(lg_reminder_author) +
+    string msg = "lg-reminder " + string(lg_reminder_version) + 
+                 "\nBy " + string(lg_reminder_author) +
+                 "\nLicense: MIT" +
                  "\n\n洛谷私信提醒工具\n后台运行，无窗口\n\n感谢使用！";
     string title = "关于 lg-reminder";
     
@@ -554,7 +554,7 @@ void ShowAboutDialog(HWND hwnd) {
 
 void ShowSettingsDialog(HWND hwnd) {
     string current_interval = to_string(g_check_interval);
-    string hint = "请手动编辑 config.txt 文件修改间隔";
+    string hint = "请手动编辑 config.txt 文件";
     string hint_title = "提示";
     
     string hint_sys = utf8_to_system(hint);
