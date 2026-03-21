@@ -2,7 +2,7 @@
 lg-reminder
 在 Windows 通知弹窗提醒洛谷私信
 ==================================================
-@version v.1.2
+@version v.1.2.1
 @author Gary0
 @license MIT
 Copyright 2026 (c) Gary0
@@ -40,13 +40,15 @@ Copyright 2026 (c) Gary0
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "comctl32.lib")
 
-#define lg_reminder_version "v.1.2"
+#define lg_reminder_version "v.1.2.1"
 #define lg_reminder_author "Gary0"
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAY_EXIT 1001
 #define ID_TRAY_ABOUT 1003
 #define ID_TRAY_SETTINGS 1004
-#define ID_TRAY_SHOW_LOG 1005
+#define ID_TRAY_LOG 1005
+#define ID_TRAY_GITHUB 1006
+#define ID_TRAY_README 1007
 
 typedef long long LL;
 using namespace std;
@@ -587,12 +589,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case ID_TRAY_SETTINGS:
 			ShowCfgDialog(hwnd);
 			break;
-		case ID_TRAY_SHOW_LOG:
+		case ID_TRAY_LOG:
 			ShowLogDialog(hwnd);
 			break;
 		case ID_TRAY_EXIT:
 			g_running = false;
 			DestroyWindow(hwnd);
+			break;
+		case ID_TRAY_README:
+			ShellExecuteA(NULL, "open", "https://github.com/Gary-0925/lg-reminder/blob/main/README.md", NULL, NULL, SW_SHOW);
+			break;
+		case ID_TRAY_GITHUB:
+			ShellExecuteA(NULL, "open", "https://github.com/Gary-0925/lg-reminder/tags", NULL, NULL, SW_SHOW);
 			break;
 		}
 		break;
@@ -626,13 +634,18 @@ void ShowContextMenu(HWND hwnd)
 {
 	HMENU hMenu = CreatePopupMenu();
 	
-	string str_show_log = utf8_to_system("日志");
-	string str_settings = utf8_to_system("设置");
+    string str_readme = utf8_to_system("使用说明");
+    string str_github = utf8_to_system("手动更新");
+	string str_show_log = utf8_to_system("打开日志");
+	string str_settings = utf8_to_system("打开配置");
 	string str_about = utf8_to_system("关于");
 	string str_exit = utf8_to_system("退出");
 	
-	InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SHOW_LOG, str_show_log.c_str());
+	InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_README, str_readme.c_str());
+	InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_GITHUB, str_github.c_str());
+	InsertMenuA(hMenu, -1, MF_SEPARATOR, 0, NULL);
 	InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_SETTINGS, str_settings.c_str());
+	InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_LOG, str_show_log.c_str());
 	InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_ABOUT, str_about.c_str());
 	InsertMenuA(hMenu, -1, MF_SEPARATOR, 0, NULL);
 	InsertMenuA(hMenu, -1, MF_BYPOSITION, ID_TRAY_EXIT, str_exit.c_str());
