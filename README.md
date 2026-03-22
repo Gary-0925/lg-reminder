@@ -14,7 +14,7 @@
 
 在 @[PenaltyKing](https://www.luogu.com.cn/user/976095) 的建议下，我写了一个在 Windows 通知中弹窗显示洛谷私信的工具。
 
-该程序会在后台无窗口运行，并在系统托盘中显示，监听到新的洛谷私信时在通知中提示。
+该程序会在后台无窗口运行，并在系统托盘中显示，监听到新的洛谷私信时在通知中提示，点击通知后跳转到私信。
 
 可以前往这里下载： https://github.com/Gary-0925/lg-reminder/tags 。  
 项目地址： https://github.com/Gary-0925/lg-reminder 。  
@@ -46,8 +46,8 @@ interval=10
 > 1. 在浏览器中登录洛谷并进入私信页面 
 > 2. 按 F12 打开开发者工具
 > 3. 切换到“网络”标签，刷新页面
-> 4. 点进名称是“chat”的请求，往下翻，在 Request Headers 中找到“Cookie”
-> 5. 复制完整 cookie 内容到 config.txt
+> 4. 点进名称是“chat”的请求，往下翻，在 Request Headers 中复制“Cookie”
+> 5. 将 cookie（注意是完整 cookie，不是只包含 __client_id）填入 config.txt
 > 
 > ![](https://cdn.luogu.com.cn/upload/image_hosting/1m9kqkci.png)
 >
