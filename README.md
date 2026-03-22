@@ -1,8 +1,8 @@
-[![最新版本](https://img.shields.io/github/v/release/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/tags)
+[![最新版本](https://img.shields.io/github/v/release/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/releases/latest)
 [![最新 commit](https://img.shields.io/github/last-commit/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/commit/main)
 [![license](https://img.shields.io/github/license/Gary-0925/lg-reminder.svg)](https://github.com/Gary-0925/lg-reminder/blob/main/LICENSE)
 
-省流：在Windows弹窗显示洛谷私信的工具可以到[这里](https://github.com/Gary-0925/lg-reminder/tags)下载运行后按说明填写配置再运行就能用了。
+省流：在Windows弹窗显示洛谷私信的工具可以到[这里](https://github.com/Gary-0925/lg-reminder/releases/latest)下载运行后按说明填写配置再运行就能用了。
 
 ~~明目张胆要 star。QAQ~~
 
@@ -16,11 +16,11 @@
 
 该程序会在后台无窗口运行，并在系统托盘中显示，监听到新的洛谷私信时在通知中提示，点击通知后跳转到私信。
 
-可以前往这里下载： https://github.com/Gary-0925/lg-reminder/tags 。  
+可以前往这里下载： https://github.com/Gary-0925/lg-reminder/releases/latest 。  
 项目地址： https://github.com/Gary-0925/lg-reminder 。  
 洛谷地址： https://www.luogu.com.cn/article/ftltn0ld 。  
 
-如果你只想使用程序，请点击上面的链接，进入最新版本，并点击 `lg-reminder.windows.zip`，**下载后一定要先解压再运行**。
+如果你只想使用程序，请点击上面的链接，点击下载 `lg-reminder.windows.zip`，**下载后一定要先解压再运行**。
 
 ## 使用方法
 
