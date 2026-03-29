@@ -89,11 +89,11 @@ struct notify_data_t
 // 配置数据结构
 struct ConfigData {
 	int uid = 0;
-	int interval = 15;
+	int interval = 20;
 };
 
 // 全局变量
-int g_check_interval = 15;
+int g_check_interval = 20;
 int g_uid = 0;
 HWND g_hwnd = NULL;
 notify_data_t g_notify = {};
@@ -924,7 +924,7 @@ void check_messages()
 			}
 		}
 		else
-			write_log("错误：无消息数据，请检查配置或网络");
+			show_error_message("错误：无消息数据，请检查配置或网络");
 	}
 	g_checking = false;
 }
