@@ -57,7 +57,7 @@
 uid=你的uid
 
 # 轮询间隔（秒）
-interval=15
+interval=20
 
 # cookie 已使用 Windows DPAPI 加密存储
 # 如需修改 cookie，请在托盘图标右键菜单选择 "设置 cookie"
@@ -76,7 +76,7 @@ interval=15
 uid=1202669
 
 # 轮询间隔（秒）
-interval=10
+interval=20
 
 # cookie 已使用 Windows DPAPI 加密存储
 # 如需修改 cookie，请在托盘图标右键菜单选择 "设置 cookie"
