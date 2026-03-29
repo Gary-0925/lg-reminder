@@ -3,7 +3,7 @@ lg-reminder
 在 Windows 通知弹窗提醒洛谷私信
 https://github.com/Gary-0925/lg-reminder/
 ==================================================
-@version v.1.5
+@version v.1.5.1
 @author Gary0
 @license MIT
 Copyright 2026 (c) Gary0
@@ -53,7 +53,7 @@ Cookie 已使用 Windows DPAPI 加密存储
 // MinGW64 用户请在编译命令中添加以下链接库：
 // -lwinhttp -luser32 -lshell32 -lcomctl32 -lgdi32 -lcrypt32 -ladvapi32
 
-#define LG_REMINDER_VERSION "v.1.5"
+#define LG_REMINDER_VERSION "v.1.5.1"
 #define LG_REMINDER_AUTHOR "Gary0"
 #define WM_TRAY_ICON (WM_USER + 1)
 #define ID_TRAY_EXIT 1001
@@ -287,8 +287,8 @@ bool load_config(ConfigData &config)
 			"# lg-reminder 配置文件\n\n"
 			"# 你的洛谷用户 id\n"
 			"uid=你的uid\n\n"
-			"# 轮询间隔（秒），最小8秒\n"
-			"interval=15\n\n"
+			"# 轮询间隔（秒），最小20秒\n"
+			"interval=20\n\n"
 			"# cookie 已使用 Windows DPAPI 加密存储\n"
 			"# 如需修改 cookie，请在托盘图标右键菜单选择 \"设置 cookie\"\n";
 		
@@ -333,7 +333,7 @@ bool load_config(ConfigData &config)
 		}
 	}
 	
-	if (config.interval < 8) config.interval = 8;
+	if (config.interval < 20) config.interval = 20;
 	
 	return config.uid > 0;
 }
