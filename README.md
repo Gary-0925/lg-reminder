@@ -3,6 +3,8 @@
 )](https://github.com/Gary-0925/lg-reminder/commit/main)
 [![license](https://img.shields.io/github/license/Gary-0925/lg-reminder.svg?style=flat-square)](https://github.com/Gary-0925/lg-reminder/blob/main/LICENSE)
 
+根据洛谷最新的规定，使用该程序很可能导致被洛谷封禁。如被封禁，本程序作者不承担任何责任。
+
 ---
 
 省流：在Windows弹窗显示洛谷私信的工具可以到[这里](https://github.com/Gary-0925/lg-reminder/releases/latest)下载运行后按说明填写配置再运行就能用了。
